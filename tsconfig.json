@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
-<<<<<<< HEAD
-    // Enable latest features
+     // Enable latest features
     "lib": ["ESNext", "DOM"],
     "target": "ESNext",
     "module": "ESNext",
@@ -26,10 +25,3 @@
     "noPropertyAccessFromIndexSignature": false
   }
 }
-=======
-    "strict": true,
-    "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx"
-  }
-}
->>>>>>> 48531ef (first init)

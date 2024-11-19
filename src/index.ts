@@ -20,6 +20,10 @@ app.post(
     const user = c.req.valid('json')
     console.log(user.name) // string
     console.log(user.age) // number
+    return c.json({
+      name: user.name,
+      age: user.age
+    })
   }
 )
 

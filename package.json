@@ -3,6 +3,7 @@
   "scripts": {
     "dev": "bun run --hot src/index.ts"
   },
+  "main": "src/index.ts",
   "dependencies": {
     "@hono/zod-validator": "^0.4.1",
     "hono": "^4.6.10",

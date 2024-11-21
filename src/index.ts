@@ -4,6 +4,8 @@ import { Hono } from 'hono'
 import { prettyJSON } from 'hono/pretty-json'
 import { bodyToMd5, generateSig, readEnv, signature } from './utils'
 import { baseHttp } from './baseHttp'
+import { db } from './db'
+import { users } from './db/schema/users'
 
 const app = new Hono()
 
@@ -60,6 +62,13 @@ app.get('/token', async (c) => {
 
   return c.json({
     data: jsonResult
+  })
+})
+
+app.get('/users', async (c) => {
+  const userResult = await db.select().from(users);
+  return c.json({
+    result: userResult
   })
 })
 

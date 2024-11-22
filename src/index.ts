@@ -9,6 +9,9 @@ import { users } from './db/schema/users'
 import { cors } from "hono/cors"
 import { basicAuth } from 'hono/basic-auth'
 import invariant from 'tiny-invariant'
+import { farmJson } from './farm'
+import dayjs from 'dayjs'
+import { PgJsonBuilder } from 'drizzle-orm/pg-core'
 
 const app = new Hono()
 
@@ -83,7 +86,15 @@ app.get('/token', async (c) => {
 
 const  testToken = "eyJhbGciOiJIUzI1NiJ9.eyJwcm9mZXNzaW9uIjoxLCJhcHBpZCI6ImNlODQ4MGQxOTkyNzRkMzJhYjE5YjA5ZDUzNWIwZjgwIiwib3BlcmF0b3JUeXBlIjoxLCJvcGVyYXRvciI6ImNlODQ4MGQxOTkyNzRkMzJhYjE5YjA5ZDUzNWIwZjgwIiwianRpIjoiMTg5MTQ5Nzk2MzU5NDQyNjQ1MCIsImlhdCI6MTczMjI3MTMzMSwic3ViIjoiY2U4NDgwZDE5OTI3NGQzMmFiMTliMDlkNTM1YjBmODAiLCJleHAiOjE3MzI4NzYxMzF9.dE85T2vRAkia5GskhtN9lurjUenN7WpIy4gRmmuspyw"
 
-app.get('farmList/:farmNodeId/deviceList', async (c) => {
+app.get('/farmList', async (c) => {
+  return c.json({
+    result: {
+      farmList: farmJson
+    }
+  })
+})
+
+app.get('/farmList/:farmNodeId/deviceList', async (c) => {
   const farmNodeId = c.req.param('farmNodeId')
   invariant(farmNodeId, 'farmNodeId is required!');
 
@@ -109,6 +120,45 @@ app.get('farmList/:farmNodeId/deviceList', async (c) => {
   return c.json({data: {
     deviceList: jsonResult
   }})
+})
+
+app.get('/websdk/player/:deviceId', async (c) => {
+  const deviceId = c.req.param('deviceId')
+  invariant(deviceId, 'deviceId is required!');
+
+  const playerBody = {
+    deviceId: deviceId,
+    endTime: dayjs().add(1, 'day').valueOf()
+  }
+
+  const timestamp = Date.now()
+
+  const jsonResult = await baseHttp.post<{
+    resultCode: string,
+    resultMsg: string,
+    data: any
+  }>('v3/open/api/websdk/player', {
+    prefixUrl: prefixUrl, json: playerBody, 
+    headers: {
+      appid: config.appid!,
+      md5: bodyToMd5(JSON.stringify(playerBody)),
+      timestamp: timestamp.toString(),
+      token: testToken,
+      version: '1.0.0',
+      signature: signature(timestamp, playerBody, config.rsa!, testToken),
+    }
+  }).json()
+
+  if( jsonResult.resultCode === '000000') {
+    return c.json({
+      data: jsonResult.data
+    })
+  }
+
+  return c.json({
+    resultCode: jsonResult.resultCode,
+    resultMsg: jsonResult.resultMsg
+  })
 })
 
 app.get('/users', async (c) => {

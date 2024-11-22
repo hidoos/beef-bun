@@ -137,7 +137,7 @@ app.get('/websdk/player/:deviceId', async (c) => {
     resultCode: string,
     resultMsg: string,
     data: any
-  }>('v3/open/api/websdk/player', {
+  }>('v3/open/api/websdk/live', {
     prefixUrl: prefixUrl, json: playerBody, 
     headers: {
       appid: config.appid!,

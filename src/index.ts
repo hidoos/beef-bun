@@ -6,6 +6,9 @@ import { bodyToMd5, generateSig, readEnv, signature } from './utils'
 import { baseHttp } from './baseHttp'
 import { db } from './db'
 import { users } from './db/schema/users'
+import { cors } from "hono/cors"
+import { basicAuth } from 'hono/basic-auth'
+import invariant from 'tiny-invariant'
 
 const app = new Hono()
 
@@ -15,6 +18,19 @@ const userSchema = z.object({
 })
 
 app.use(prettyJSON()) 
+app.use(cors())
+
+app.use(
+  '/auth/*',
+  basicAuth({
+    username: 'lanhong',
+    password: 'gzfz@)@!',
+  })
+)
+
+app.get('/auth/page', (c) => {
+  return c.text('You are authorized')
+})
 
 app.post(
   '/users/new',
@@ -40,10 +56,10 @@ app.get("/", (c) => {
 
 const config = readEnv()
 
+const prefixUrl = 'https://open.andmu.cn/'
+
 
 app.get('/token', async (c) => {
-  const prefixUrl = 'https://open.andmu.cn/'
-  const sg = generateSig(config.appid!, config.secret!)
   const requestBody = {
     sig: generateSig(config.appid!, config.secret!),
     operatorType: 1
@@ -63,6 +79,36 @@ app.get('/token', async (c) => {
   return c.json({
     data: jsonResult
   })
+})
+
+const  testToken = "eyJhbGciOiJIUzI1NiJ9.eyJwcm9mZXNzaW9uIjoxLCJhcHBpZCI6ImNlODQ4MGQxOTkyNzRkMzJhYjE5YjA5ZDUzNWIwZjgwIiwib3BlcmF0b3JUeXBlIjoxLCJvcGVyYXRvciI6ImNlODQ4MGQxOTkyNzRkMzJhYjE5YjA5ZDUzNWIwZjgwIiwianRpIjoiMTg5MTQ5Nzk2MzU5NDQyNjQ1MCIsImlhdCI6MTczMjI3MTMzMSwic3ViIjoiY2U4NDgwZDE5OTI3NGQzMmFiMTliMDlkNTM1YjBmODAiLCJleHAiOjE3MzI4NzYxMzF9.dE85T2vRAkia5GskhtN9lurjUenN7WpIy4gRmmuspyw"
+
+app.get('farmList/:farmNodeId/deviceList', async (c) => {
+  const farmNodeId = c.req.param('farmNodeId')
+  invariant(farmNodeId, 'farmNodeId is required!');
+
+  const deviceBody = {
+    nodeId: farmNodeId,
+    queryType: 1
+  }
+
+  const timestamp = Date.now()
+
+  const jsonResult = await baseHttp.post('v3/open/api/node/tree', {
+    prefixUrl: prefixUrl, json: deviceBody, 
+    headers: {
+      appid: config.appid!,
+      md5: bodyToMd5(JSON.stringify(deviceBody)),
+      timestamp: timestamp.toString(),
+      token: testToken,
+      version: '1.0.0',
+      signature: signature(timestamp, deviceBody, config.rsa!, testToken),
+    }
+  }).json()
+
+  return c.json({data: {
+    deviceList: jsonResult
+  }})
 })
 
 app.get('/users', async (c) => {

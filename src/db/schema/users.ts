@@ -6,3 +6,9 @@ export const users = pgTable("users", {
   age: integer().notNull(),
   email: varchar({ length: 255 }).notNull().unique(),
 });
+
+export const farmDataList = pgTable("farmDataList", {
+  farmId: integer().primaryKey().generatedAlwaysAsIdentity(),
+  id: integer(),
+  
+})

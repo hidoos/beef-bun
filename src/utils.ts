@@ -25,14 +25,24 @@ export const bodyToMd5 = (bodyJson: string) => createHash("md5").update(bodyJson
 
 
 // RSA 密钥
-export function signature(timestamp: number, reqeustBody: any, privateKey: string) {
+export function signature(timestamp: number, reqeustBody: any, privateKey: string, withToken = '') {
   // 需要签名的字符串
-  const jsonString = JSON.stringify({
+  let jsonString = JSON.stringify({
     appid: process.env.appid,
     md5: bodyToMd5(JSON.stringify(reqeustBody)),
     timestamp: timestamp.toString(),
-    version: "1.0.0"
+    version: "1.0.0",
   });
+
+  if(withToken) {
+    jsonString = JSON.stringify({
+      appid: process.env.appid,
+      md5: bodyToMd5(JSON.stringify(reqeustBody)),
+      timestamp: timestamp.toString(),
+      token: withToken,
+      version: "1.0.0",
+    });
+  }
 
   // 创建签名对象
   const sign = createSign('SHA1');

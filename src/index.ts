@@ -12,6 +12,7 @@ import invariant from 'tiny-invariant'
 import { farmJson } from './farm'
 import dayjs from 'dayjs'
 import { PgJsonBuilder } from 'drizzle-orm/pg-core'
+import type { BaseRes } from './type'
 
 const app = new Hono()
 
@@ -94,6 +95,39 @@ app.get('/farmList', async (c) => {
   })
 })
 
+async function getThumbnail(deviceId: string) {
+  invariant(deviceId, 'deviceId is required!');
+
+  const playerBody = {
+    deviceId: deviceId,
+  }
+
+  const timestamp = Date.now()
+
+  const jsonResult = await baseHttp.post<BaseRes<any>>('v3/open/api/camera/thumbnail/realtime', {
+    prefixUrl: prefixUrl, json: playerBody, 
+    headers: {
+      appid: config.appid!,
+      md5: bodyToMd5(JSON.stringify(playerBody)),
+      timestamp: timestamp.toString(),
+      token: testToken,
+      version: '1.0.0',
+      signature: signature(timestamp, playerBody, config.rsa!, testToken),
+    }
+  }).json()
+
+  return jsonResult.data.url
+}
+
+// 创建一个异步生成器函数
+async function* getAllThumbnail(deviceList: any[]) {
+  for (const device of deviceList) {
+      const thumbnail = await getThumbnail(device.deviceId);
+      device.url = thumbnail
+      yield device;
+  }
+}
+
 app.get('/farmList/:farmNodeId/deviceList', async (c) => {
   const farmNodeId = c.req.param('farmNodeId')
   invariant(farmNodeId, 'farmNodeId is required!');
@@ -105,7 +139,7 @@ app.get('/farmList/:farmNodeId/deviceList', async (c) => {
 
   const timestamp = Date.now()
 
-  const jsonResult = await baseHttp.post('v3/open/api/node/tree', {
+  const jsonResult = await baseHttp.post<BaseRes<any>>('v3/open/api/node/tree', {
     prefixUrl: prefixUrl, json: deviceBody, 
     headers: {
       appid: config.appid!,
@@ -117,8 +151,19 @@ app.get('/farmList/:farmNodeId/deviceList', async (c) => {
     }
   }).json()
 
+  const deviceList = jsonResult.data.device
+  console.log("deviceList", deviceList)
+
+
+  let newDeviceList = []
+  for await (const data of getAllThumbnail(deviceList)) {
+    newDeviceList.push(data)
+  }
+
+  console.log('newDeviceList', newDeviceList)
+
   return c.json({data: {
-    deviceList: jsonResult
+    deviceList: deviceList
   }})
 })
 
@@ -133,11 +178,7 @@ app.get('/websdk/player/:deviceId', async (c) => {
 
   const timestamp = Date.now()
 
-  const jsonResult = await baseHttp.post<{
-    resultCode: string,
-    resultMsg: string,
-    data: any
-  }>('v3/open/api/websdk/live', {
+  const jsonResult = await baseHttp.post<BaseRes<any>>('v3/open/api/websdk/live', {
     prefixUrl: prefixUrl, json: playerBody, 
     headers: {
       appid: config.appid!,

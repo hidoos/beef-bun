@@ -85,7 +85,7 @@ app.get('/token', async (c) => {
   })
 })
 
-const  testToken = "eyJhbGciOiJIUzI1NiJ9.eyJwcm9mZXNzaW9uIjoxLCJhcHBpZCI6ImNlODQ4MGQxOTkyNzRkMzJhYjE5YjA5ZDUzNWIwZjgwIiwib3BlcmF0b3JUeXBlIjoxLCJvcGVyYXRvciI6ImNlODQ4MGQxOTkyNzRkMzJhYjE5YjA5ZDUzNWIwZjgwIiwianRpIjoiMTg5MTQ5Nzk2MzU5NDQyNjQ1MCIsImlhdCI6MTczMjI3MTMzMSwic3ViIjoiY2U4NDgwZDE5OTI3NGQzMmFiMTliMDlkNTM1YjBmODAiLCJleHAiOjE3MzI4NzYxMzF9.dE85T2vRAkia5GskhtN9lurjUenN7WpIy4gRmmuspyw"
+const testToken='eyJhbGciOiJIUzI1NiJ9.eyJwcm9mZXNzaW9uIjoxLCJhcHBpZCI6ImNlODQ4MGQxOTkyNzRkMzJhYjE5YjA5ZDUzNWIwZjgwIiwib3BlcmF0b3JUeXBlIjoxLCJvcGVyYXRvciI6ImNlODQ4MGQxOTkyNzRkMzJhYjE5YjA5ZDUzNWIwZjgwIiwianRpIjoiMTg5NDM2NTgzNjQwMjg2NDI4MSIsImlhdCI6MTczMjYxMzIyMCwic3ViIjoiY2U4NDgwZDE5OTI3NGQzMmFiMTliMDlkNTM1YjBmODAiLCJleHAiOjE3MzMyMTgwMjB9.7EwfngIRcDM7VRg-KRG-X4H248pjXBvan2Mj7i-9RJo'
 
 app.get('/farmList', async (c) => {
   return c.json({
@@ -192,7 +192,9 @@ app.get('/websdk/player/:deviceId', async (c) => {
 
   if( jsonResult.resultCode === '000000') {
     return c.json({
-      data: jsonResult.data
+      data: jsonResult.data,
+      resultCode: jsonResult.resultCode,
+      resultMsg: jsonResult.resultMsg
     })
   }
 

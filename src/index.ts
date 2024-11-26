@@ -11,7 +11,6 @@ import { basicAuth } from 'hono/basic-auth'
 import invariant from 'tiny-invariant'
 import { farmJson } from './farm'
 import dayjs from 'dayjs'
-import { PgJsonBuilder } from 'drizzle-orm/pg-core'
 import type { BaseRes } from './type'
 
 const app = new Hono()
@@ -85,7 +84,7 @@ app.get('/token', async (c) => {
   })
 })
 
-const testToken='eyJhbGciOiJIUzI1NiJ9.eyJwcm9mZXNzaW9uIjoxLCJhcHBpZCI6ImNlODQ4MGQxOTkyNzRkMzJhYjE5YjA5ZDUzNWIwZjgwIiwib3BlcmF0b3JUeXBlIjoxLCJvcGVyYXRvciI6ImNlODQ4MGQxOTkyNzRkMzJhYjE5YjA5ZDUzNWIwZjgwIiwianRpIjoiMTg5NDM2NTgzNjQwMjg2NDI4MSIsImlhdCI6MTczMjYxMzIyMCwic3ViIjoiY2U4NDgwZDE5OTI3NGQzMmFiMTliMDlkNTM1YjBmODAiLCJleHAiOjE3MzMyMTgwMjB9.7EwfngIRcDM7VRg-KRG-X4H248pjXBvan2Mj7i-9RJo'
+const testToken = process.env.beefToken
 
 app.get('/farmList', async (c) => {
   return c.json({

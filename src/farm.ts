@@ -19,7 +19,8 @@ export const farmJson =  [
     "principalName": "申修权",
     "phone": "19013896861",
     "longitude": 107.8678063,
-    "latitude": 28.0268294
+    "latitude": 28.0268294,
+    "nodeId": "1198585611513659392"
   },
   {
     "id": 17122436586567,

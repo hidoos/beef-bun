@@ -203,6 +203,43 @@ app.get('/websdk/player/:deviceId', async (c) => {
   })
 })
 
+app.get('/player/flv/:deviceId', async (c) => {
+  const deviceId = c.req.param('deviceId')
+  invariant(deviceId, 'deviceId is required!');
+
+  const playerBody = {
+    deviceId: deviceId,
+    endTime: dayjs().add(10, 'minute').valueOf()
+  }
+
+  const timestamp = Date.now()
+
+  const jsonResult = await baseHttp.post<BaseRes<any>>('v3/open/api/device/flv', {
+    prefixUrl: prefixUrl, json: playerBody, 
+    headers: {
+      appid: config.appid!,
+      md5: bodyToMd5(JSON.stringify(playerBody)),
+      timestamp: timestamp.toString(),
+      token: testToken,
+      version: '1.0.0',
+      signature: signature(timestamp, playerBody, config.rsa!, testToken),
+    }
+  }).json()
+
+  if( jsonResult.resultCode === '000000') {
+    return c.json({
+      data: jsonResult.data,
+      resultCode: jsonResult.resultCode,
+      resultMsg: jsonResult.resultMsg
+    })
+  }
+
+  return c.json({
+    resultCode: jsonResult.resultCode,
+    resultMsg: jsonResult.resultMsg
+  })
+})
+
 app.get('/users', async (c) => {
   const userResult = await db.select().from(users);
   return c.json({

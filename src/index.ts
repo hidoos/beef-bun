@@ -61,7 +61,6 @@ async function getThumbnail(deviceId: string) {
   const playerBody = {
     deviceId: deviceId,
   }
-
   const timestamp = Date.now()
 
   const jsonResult = await baseHttp.post<BaseRes<any>>('v3/open/api/camera/thumbnail/realtime', {
@@ -80,12 +79,16 @@ async function getThumbnail(deviceId: string) {
 }
 
 // 创建一个异步生成器函数
-async function* getAllThumbnail(deviceList: any[]) {
-  for (const device of deviceList) {
-      const thumbnail = await getThumbnail(device.deviceId);
-      device.url = thumbnail
-      yield device;
-  }
+async function getAllThumbnail(deviceList: any[]) {
+  const newDeviceList = deviceList
+  const allRequest = deviceList.map(device => getThumbnail(device.deviceId))
+  const responses = await Promise.all(allRequest);
+
+  responses.forEach((result, index) => {
+    newDeviceList[index].url = result
+  })
+
+  return newDeviceList
 }
 
 app.get('/farmList/:farmNodeId/deviceList', async (c) => {
@@ -114,17 +117,11 @@ app.get('/farmList/:farmNodeId/deviceList', async (c) => {
   }).json()
 
   const deviceList = jsonResult.data.device
-  console.log("deviceList", deviceList)
 
-  let newDeviceList = []
-  for await (const data of getAllThumbnail(deviceList)) {
-    newDeviceList.push(data)
-  }
-
-  console.log('newDeviceList', newDeviceList)
+  let newDeviceList = await getAllThumbnail(deviceList)
 
   return c.json({data: {
-    deviceList: deviceList
+    deviceList: newDeviceList
   }})
 })
 
@@ -157,17 +154,11 @@ app.get('/farmDetail/:farmId/deviceList', async (c) => {
   }).json()
 
   const deviceList = jsonResult.data.device
-  console.log("deviceList", deviceList)
 
-  let newDeviceList = []
-  for await (const data of getAllThumbnail(deviceList)) {
-    newDeviceList.push(data)
-  }
-
-  console.log('newDeviceList', newDeviceList)
-
+  let newDeviceList = await getAllThumbnail(deviceList)
+  
   return c.json({data: {
-    deviceList: deviceList
+    deviceList: newDeviceList
   }})
 })
 

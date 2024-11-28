@@ -12,4 +12,3 @@ export const baseHttp = ky.extend({
 		]
 	}
 });
-

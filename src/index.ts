@@ -1,7 +1,4 @@
-import { z } from 'zod'
-import { zValidator } from '@hono/zod-validator'
 import { Hono } from 'hono'
-import { prettyJSON } from 'hono/pretty-json'
 import { bodyToMd5, generateSig, readEnv, signature } from './utils'
 import { baseHttp } from './baseHttp'
 import { db } from './db'
@@ -9,60 +6,24 @@ import { users } from './db/schema/users'
 import { cors } from "hono/cors"
 import { basicAuth } from 'hono/basic-auth'
 import invariant from 'tiny-invariant'
-import { farmJson } from './farm'
+import { farmJson, getFarmNodeId } from './farm'
 import dayjs from 'dayjs'
 import type { BaseRes } from './type'
 
 const app = new Hono()
+const config = readEnv()
+const prefixUrl = 'https://open.andmu.cn/'
 
-const userSchema = z.object({
-  name: z.string(),
-  age: z.number(),
-})
-
-app.use(prettyJSON()) 
 app.use(cors())
-
-app.use(
-  '/auth/*',
-  basicAuth({
-    username: 'lanhong',
-    password: 'gzfz@)@!',
-  })
-)
-
-app.get('/auth/page', (c) => {
-  return c.text('You are authorized')
-})
-
-app.post(
-  '/users/new',
-  zValidator('json', userSchema, (result, c) => {
-    if (!result.success) {
-      return c.text('Invalid!', 400)
-    }
-  }),
-  async (c) => {
-    const user = c.req.valid('json')
-    console.log(user.name) // string
-    console.log(user.age) // number
-    return c.json({
-      name: user.name,
-      age: user.age
-    })
-  }
-)
 
 app.get("/", (c) => {
   return c.text('hello hono')
 })
 
-const config = readEnv()
-
-const prefixUrl = 'https://open.andmu.cn/'
-
-
-app.get('/token', async (c) => {
+app.get('/token', basicAuth({
+  username: 'lanhong',
+  password: 'gzfz@)@!',
+}), async (c) => {
   const requestBody = {
     sig: generateSig(config.appid!, config.secret!),
     operatorType: 1
@@ -131,6 +92,8 @@ app.get('/farmList/:farmNodeId/deviceList', async (c) => {
   const farmNodeId = c.req.param('farmNodeId')
   invariant(farmNodeId, 'farmNodeId is required!');
 
+  invariant(farmNodeId, 'farmNodeId is required!');
+  
   const deviceBody = {
     nodeId: farmNodeId,
     queryType: 1
@@ -153,6 +116,48 @@ app.get('/farmList/:farmNodeId/deviceList', async (c) => {
   const deviceList = jsonResult.data.device
   console.log("deviceList", deviceList)
 
+  let newDeviceList = []
+  for await (const data of getAllThumbnail(deviceList)) {
+    newDeviceList.push(data)
+  }
+
+  console.log('newDeviceList', newDeviceList)
+
+  return c.json({data: {
+    deviceList: deviceList
+  }})
+})
+
+app.get('/farmDetail/:farmId/deviceList', async (c) => {
+  const farmId = c.req.param('farmId')
+  invariant(farmId, 'farmId is required!');
+
+  const farmDetail = getFarmNodeId(farmId)
+  console.log('farmDetail', farmDetail)
+  const farmNodeId = farmDetail?.nodeId
+  invariant(farmNodeId, 'farmNodeId is required!');
+  
+  const deviceBody = {
+    nodeId: farmNodeId,
+    queryType: 1
+  }
+
+  const timestamp = Date.now()
+
+  const jsonResult = await baseHttp.post<BaseRes<any>>('v3/open/api/node/tree', {
+    prefixUrl: prefixUrl, json: deviceBody, 
+    headers: {
+      appid: config.appid!,
+      md5: bodyToMd5(JSON.stringify(deviceBody)),
+      timestamp: timestamp.toString(),
+      token: testToken,
+      version: '1.0.0',
+      signature: signature(timestamp, deviceBody, config.rsa!, testToken),
+    }
+  }).json()
+
+  const deviceList = jsonResult.data.device
+  console.log("deviceList", deviceList)
 
   let newDeviceList = []
   for await (const data of getAllThumbnail(deviceList)) {

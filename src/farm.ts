@@ -111,7 +111,8 @@ export const farmJson =  [
     "principalName": "周焕勇",
     "phone": "15348654925",
     "longitude": 107.750856,
-    "latitude": 28.10088
+    "latitude": 28.10088,
+    "nodeId": "1201868022750879744"
   },
   {
     "id": 18426632023749,
@@ -145,7 +146,8 @@ export const farmJson =  [
     "principalName": "安启书",
     "phone": "13985226180",
     "longitude": 107.783042,
-    "latitude": 28.1417867
+    "latitude": 28.1417867,
+    "nodeId": "1201869850305515520"
   },
   {
     "id": 18426680777029,
@@ -156,7 +158,8 @@ export const farmJson =  [
     "principalName": "李明刚",
     "phone": "15599237938",
     "longitude": 107.7902089,
-    "latitude": 28.1417867
+    "latitude": 28.1417867,
+    "nodeId": "1201870095857111040"
   },
   {
     "id": 18426700521029,
@@ -167,7 +170,8 @@ export const farmJson =  [
     "principalName": "杨昌位",
     "phone": "15120193364",
     "longitude": 107.782619,
-    "latitude": 28.125384
+    "latitude": 28.125384,
+    "nodeId": "1201870289416499200"
   },
   {
     "id": 18426743395013,
@@ -178,7 +182,8 @@ export const farmJson =  [
     "principalName": "钱邦强",
     "phone": "13984990539",
     "longitude": 107.7510245,
-    "latitude": 28.1105829
+    "latitude": 28.1105829,
+    "nodeId": "1201870504344309760"
   },
   {
     "id": 18426755546309,
@@ -488,3 +493,7 @@ export const farmJson =  [
     "latitude": 27.64275
   }
 ]
+
+export const getFarmNodeId = (farmId: string | number) => {
+  return farmJson.find(farmDetail => farmDetail.id == farmId)
+}

@@ -132,7 +132,14 @@ app.get('/farmDetail/:farmId/deviceList', async (c) => {
   const farmDetail = getFarmNodeId(farmId)
   console.log('farmDetail', farmDetail)
   const farmNodeId = farmDetail?.nodeId
-  invariant(farmNodeId, 'farmNodeId is required!');
+  
+  if(!farmNodeId) {
+    return c.json({data: {
+      haveMonitor: false,
+      deviceList: []
+    }})
+  }
+
   
   const deviceBody = {
     nodeId: farmNodeId,
@@ -158,6 +165,7 @@ app.get('/farmDetail/:farmId/deviceList', async (c) => {
   let newDeviceList = await getAllThumbnail(deviceList)
   
   return c.json({data: {
+    haveMonitor: true,
     deviceList: newDeviceList
   }})
 })

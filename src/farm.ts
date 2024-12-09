@@ -8,7 +8,8 @@ export const farmJson =  [
     "principalName": "陈朝军",
     "phone": "13595512721",
     "longitude": 107.876555,
-    "latitude": 28.047425
+    "latitude": 28.047425,
+    "nodeId": "1205831026275508224"
   },
   {
     "id": 17109182611397,
@@ -54,7 +55,8 @@ export const farmJson =  [
     "principalName": "张刚",
     "phone": "19013896861",
     "longitude": 107.867935,
-    "latitude": 28.029519
+    "latitude": 28.029519,
+    "nodeId": "1205831705874391040"
   },
   {
     "id": 18081457647045,
@@ -65,7 +67,8 @@ export const farmJson =  [
     "principalName": "罗邦远",
     "phone": "15085030418",
     "longitude": 107.8679,
-    "latitude": 28.029
+    "latitude": 28.029,
+    "nodeId": "1205831388545933312"
   },
   {
     "id": 18424536497477,
@@ -123,7 +126,8 @@ export const farmJson =  [
     "principalName": "刘文义",
     "phone": "15186738509",
     "longitude": 107.722825,
-    "latitude": 28.089613
+    "latitude": 28.089613,
+    "nodeId": "1205828697123840000"
   },
   {
     "id": 18426645491781,
@@ -218,7 +222,8 @@ export const farmJson =  [
     "principalName": "张顺林",
     "phone": "13985630676",
     "longitude": 107.646406,
-    "latitude": 27.861421
+    "latitude": 27.861421,
+    "nodeId": "1205832001070653440"
   },
   {
     "id": 18426843695301,
@@ -229,7 +234,8 @@ export const farmJson =  [
     "principalName": "唐科宏",
     "phone": "15885692199",
     "longitude": 107.718675,
-    "latitude": 27.7245
+    "latitude": 27.7245,
+    "nodeId": "1205832281652813824"
   },
   {
     "id": 18437068008517,
@@ -263,7 +269,8 @@ export const farmJson =  [
     "principalName": "罗瑶",
     "phone": "13984426087",
     "longitude": 107.669191,
-    "latitude": 27.684726
+    "latitude": 27.684726,
+    "nodeId": "1205829207401119744"
   },
   {
     "id": 18437203858885,
@@ -285,7 +292,8 @@ export const farmJson =  [
     "principalName": "柳仁健",
     "phone": "13508522705",
     "longitude": 107.792688,
-    "latitude": 28.026056
+    "latitude": 28.026056,
+    "nodeId": "1205827801805963264"
   },
   {
     "id": 18437331990085,
@@ -400,7 +408,8 @@ export const farmJson =  [
     "principalName": "陈启红",
     "phone": "18785277159",
     "longitude": 107.8869974,
-    "latitude": 28.0475161
+    "latitude": 28.0475161,
+    "nodeId": "1205830501264211968"
   },
   {
     "id": 18438595127749,
@@ -457,7 +466,8 @@ export const farmJson =  [
     "principalName": "冉启兵",
     "phone": "14785777976",
     "longitude": 107.789344,
-    "latitude": 27.717381
+    "latitude": 27.717381,
+    "nodeId": "1205832605090955264"
   },
   {
     "id": 19166980230213,
@@ -479,7 +489,7 @@ export const farmJson =  [
     "principalName": "张松",
     "phone": "15329424389",
     "longitude": 107.7891904,
-    "latitude": 28.029637
+    "latitude": 28.029637,
   },
   {
     "id": 19167002594757,
